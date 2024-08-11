@@ -1,8 +1,6 @@
-# task-6-job-listing
+# Job Postings Dashboard
 
 ---
-
-# Job Postings Dashboard
 
 This is a React-based job postings dashboard built with Next.js and TypeScript. The application displays a list of job postings, allowing users to view and sort them based on different criteria.
 
