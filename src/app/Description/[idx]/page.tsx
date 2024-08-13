@@ -16,7 +16,7 @@ interface idParamsType{
 export default function JobDescription({params}:idParamsType) {
   
   
-  // console.log(params);
+  console.log(params);
   
 
   return (
