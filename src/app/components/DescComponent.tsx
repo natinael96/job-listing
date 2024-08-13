@@ -1,83 +1,91 @@
 import React from 'react';
+import { opportunities } from '../../../type';
+import { useParams } from 'next/navigation';
+import { useGetJobQuery } from '../service/apiSlice';
 
-interface DescComponentProps {
-  title?: string;
-  description?: string;
-  responsibilities?: string[];
-  ideal_candidate?: {
-    age?: string;
-    gender?: string;
-    traits?: string[];
+
+
+
+const DescComponent = ({ id }: { id: string }) => {
+
+  // const params = useParams()
+  // console.log(params)
+  console.log(id, "id")
+  
+  const {data, error, isLoading} = useGetJobQuery(id);
+
+  if (!data) {
+    return <div>No job postings available</div>;
+  }
+
+  if (error) {
+    return <div>Something went wrong</div>;
+  }
+
+  if (isLoading) {
+    return (
+      <div className=''>
+        <div className="spinner"></div>
+        <p>Loading...</p>
+      </div>
+    );
+
+
+  const fields = data?.data
+  // console.log(data)
+  const toISO8601Date = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
   };
-  when_where?: string;
-  about?: {
-    posted_on?: string;
-    deadline?: string;
-    location?: string;
-    start_date?: string;
-    end_date?: string;
-    categories?: string[];
-    required_skills?: string[];
-  };
-  company?: string;
-  image?: string;
-}
+// <div className="py-24 pl-60 pr-96">
 
-interface FieldsValue {
-  fields: DescComponentProps;
-  // index: number;
-}
-
-const DescComponent: React.FC<FieldsValue> = ({ fields }) => {
-  // console.log(fields);  
-
-  // Remove the unused function
-  const parseTrait = (trait: string) => {
-    if (!trait.includes(":")) return { newLabel: "", text: trait };
-    const [label, ...textArr] = trait.split(":");
-    const newLabel = label.trim() + ":";
-    const text = textArr.join(":").trim();
-    return { newLabel  , text };
-  };
 
   return (
+    <div className="py-24 pl-60 pr-96">
+
+    <h1 className="text-3xl font-black text-[#25324b]">{fields?.title}</h1>
+
     <div className="bg-[#fff] flex justify-start gap-16 flex-row">
       <div className="flex flex-col gap-6 w-4/5">
         <div className='flex flex-col gap-4 w-full min-h-[175px] h-auto'>
             <h1 className=' text-2xl font-black leading-relaxed text-left'>Description</h1>
-            <p className="text-xl font-['Epilogue'] leading-relaxed text-left font-normal">{fields.description}</p>
+            <p className="text-xl font-['Epilogue'] leading-relaxed text-left font-normal">{fields?.description}</p>
           </div>
           <div className='flex flex-col gap-4 w-full'>
             <h1 className='text-2xl font-black leading-relaxed text-left'>Responsibilities</h1>
-            <ul className='space-y-3'>
-              {fields.responsibilities?.map((responsibility) => (
-                  <li className='flex' key={fields.title}>
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5"/>
-                      </svg>
-                      <p className='ml-2 text-xl font-["Epilogue"] leading-relaxed text-left font-normal'>{responsibility}</p>
-                  </li>
-                ))}
-            </ul>   
+           
+              {/* <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5"/>
+              </svg> */}
+              <p className='ml-2 text-xl font-["Epilogue"] leading-relaxed text-left font-normal'>{fields?.responsibilities}</p>
+            
         </div>
 
-        <div className='flex flex-col gap-4 w-full min-h-[265px] h-auto '>
-          <h1 className='text-2xl font-black leading-[28.8px] text-left'>Ideal candidate we want</h1>
-          <p className='font-["Epilogue"] text-xl'><span className='font-semibold'>Age</span> : {fields.ideal_candidate?.age}</p>
-          <ul className='list-disc pl-5 '>
-              {fields.ideal_candidate?.traits?.map((trait) => {
-                  const { newLabel, text } = parseTrait(trait);
-                  return (
-                      <li className='' key={trait}>
-                          <p className='font-["Epilogue"] text-xl leading-relaxed text-left'>
-                            <span className='leading-relaxed text-left font-semibold'>
-                              {newLabel} </span>{text}
-                          </p>
-                      </li>
-                  );
-              })}
-          </ul>       
+        <div className='flex flex-col gap-4 w-full h-auto '>
+          <h1 className='text-2xl font-black leading-relaxed text-left'>Requirements</h1>
+            <p className='font-["Epilogue"] text-xl leading-relaxed text-left'>
+              <span className='leading-relaxed text-left '>{fields?.requirements}</span>
+            </p>
         </div>
+
+        <div className='flex flex-col gap-4 w-full  h-auto '>
+          <h1 className='text-2xl font-black leading-[28.8px] text-left'>Ideal candidate we want</h1>
+          {/* <p className='font-["Epilogue"] text-xl'><span className='font-semibold'>Age</span> : {fields.ideal_candidate?.age}</p> */}                      
+            <p className='font-["Epilogue"] text-xl leading-relaxed text-left'>
+              <span className='leading-relaxed text-left '>{fields?.idealCandidate}</span>
+            </p>
+        </div>
+
+        {
+          fields?.perksAndBenefits && (
+            <div className='flex flex-col gap-4 w-full h-auto '>
+              <h1 className='text-2xl font-black leading-[28.8px] text-left'>Perks & Benefits</h1>
+              <p className='font-["Epilogue"] text-xl leading-relaxed text-left'>
+                <span className='leading-relaxed text-left '>{fields?.perksAndBenefits}</span>
+              </p>
+            </div>
+          )
+        }
 
         <div className='flex flex-col gap-6 '>
             <h1 className='text-2xl font-black leading-relaxed text-left'>When & Where</h1>
@@ -88,14 +96,14 @@ const DescComponent: React.FC<FieldsValue> = ({ fields }) => {
               <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
             </svg>
 
-            <p className='leading-relaxed text-left font-normal font-["Epilogue"] text-xl'>{fields.when_where}</p>
+            <p className='leading-relaxed text-left font-normal font-["Epilogue"] text-xl'>{fields?.whenAndWhere}</p>
           </div>
             
         </div>
       </div>
       <div className='flex flex-col gap-2 '>
           
-        <h1 className='text-2xl font-black leading-relaxed text-left'>about</h1>
+        <h1 className='text-2xl font-black leading-relaxed text-left'>About</h1>
 
 
         <div className='flex gap-4 p-3'>
@@ -106,7 +114,7 @@ const DescComponent: React.FC<FieldsValue> = ({ fields }) => {
             </span>
           <div className='flex flex-col gap-1'>
             <p className='text-[#515B6F]'>Posted On</p>
-            <p className='font-semibold'>{fields.about?.posted_on}</p>
+            <p className='font-semibold'>{fields?.datePosted}</p>
           </div>
 
         </div>
@@ -119,7 +127,7 @@ const DescComponent: React.FC<FieldsValue> = ({ fields }) => {
             </span>
           <div className='flex flex-col gap-1'>
             <p className='text-[#515B6F]'>Dead Line</p>
-            <p className='font-semibold'>{fields.about?.deadline}</p>
+            <p className='font-semibold'>{fields?.deadline}</p>
           </div>
 
         </div>
@@ -133,22 +141,9 @@ const DescComponent: React.FC<FieldsValue> = ({ fields }) => {
             </span>
           <div className='flex flex-col gap-1'>
             <p className='text-[#515B6F]'>Location</p>
-            <p className='font-semibold'>{fields.about?.location}</p>
+            <p className='font-semibold'>{fields?.location}</p>
           </div>
 
-        </div>
-
-        <div className='flex p-3 gap-4'>
-            <span className='flex justify-center items-center w-[44px] h-[44px] border border-gray-200 rounded-3xl'>
-                  <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M5.25 1V3.25M15.75 1V3.25M1.5 16.75V5.5C1.5 4.25736 2.50736 3.25 3.75 3.25H17.25C18.4926 3.25 19.5 4.25736 19.5 5.5V16.75M1.5 16.75C1.5 17.9926 2.50736 19 3.75 19H17.25C18.4926 19 19.5 17.9926 19.5 16.75M1.5 16.75V9.25C1.5 8.00736 2.50736 7 3.75 7H17.25C18.4926 7 19.5 8.00736 19.5 9.25V16.75" stroke="#26A4FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-          <div className='flex flex-col gap-1'>
-            <p className='text-[#515B6F]'>Location</p>
-            <p className='font-semibold'>{fields.about?.location}</p>
-          </div>
-        
         </div>
 
 
@@ -162,7 +157,7 @@ const DescComponent: React.FC<FieldsValue> = ({ fields }) => {
             </span>
           <div className='flex flex-col gap-1'>
             <p className='text-[#515B6F]'>End Date</p>
-            <p className='font-semibold'>{fields.about?.end_date}</p>
+            <p className='font-semibold'>{fields?.endDate}</p>
           </div>
 
         </div>
@@ -176,7 +171,7 @@ const DescComponent: React.FC<FieldsValue> = ({ fields }) => {
           <h1 className='text-2xl font-black leading-[28.8px] text-left'>Catagories</h1>
           <div className='flex gap-2'>
 
-            {fields.about?.categories?.map((category , index) => (
+            {fields?.categories?.map((category , index) => (
               index % 2 == 0 ? <p key={index} className="flex items-center justify-center bg-[#56CDAD1A] text-xs text-[#56CDAD] rounded-2xl h-[31px] min-w-20 w-auto  py-1 px-3">{category}</p> 
               : <p key={index} className="flex items-center justify-center bg-[#EB85331A] text-xs text-[#FFB836] rounded-2xl h-[31px] min-w-20 w-auto  py-1 px-3">{category}</p>
             ))}
@@ -194,15 +189,19 @@ const DescComponent: React.FC<FieldsValue> = ({ fields }) => {
         <div className='flex flex-col p-3 gap-6'>
           <h1 className='text-2xl font-black leading-[28.8px] text-left'>Required Skills</h1>
           <div className='flex gap-2 flex-wrap'>
-            {fields.about?.required_skills?.map((skill) => (
-                <p key={skill} className="flex items-center justtify-center font-epilogue text-base bg-[#F8F8FD]  text-[#4640DE]  h-[37px] min-w-20 w-auto  py-1 px-3">{skill}</p>
+            {fields?.requiredSkills.map((skill) => (
+                <p key={skill} 
+                  className="flex items-center justify-center font-epilogue text-base bg-[#F8F8FD]  text-[#4640DE]  h-[37px] min-w-20 w-auto  py-1 px-3">
+                   {skill}
+                </p>
             )) }
-          
+              
           </div>
           
         </div>
       </div>
 
+    </div>
     </div>
   );
 }
