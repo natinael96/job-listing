@@ -117,7 +117,7 @@ const DescComponent = ({ id }: { id: string }) => {
             </span>
           <div className='flex flex-col gap-1'>
             <p className='text-[#515B6F]'>Posted On</p>
-            <p className='font-semibold'>{fields?.datePosted}</p>
+            <p className='font-semibold'>{toISO8601Date(fields?.datePosted)}</p>
           </div>
 
         </div>
@@ -130,7 +130,7 @@ const DescComponent = ({ id }: { id: string }) => {
             </span>
           <div className='flex flex-col gap-1'>
             <p className='text-[#515B6F]'>Dead Line</p>
-            <p className='font-semibold'>{fields?.deadline}</p>
+            <p className='font-semibold'>{toISO8601Date(fields?.deadline)}</p>
           </div>
 
         </div>
@@ -160,7 +160,7 @@ const DescComponent = ({ id }: { id: string }) => {
             </span>
           <div className='flex flex-col gap-1'>
             <p className='text-[#515B6F]'>End Date</p>
-            <p className='font-semibold'>{fields?.endDate}</p>
+            <p className='font-semibold'>{toISO8601Date(fields?.endDate)}</p>
           </div>
 
         </div>
