@@ -12,7 +12,12 @@ function DashboardComponent() {
     const { data, error, isLoading } = useGetJobsQuery();
 
     if (isLoading) {
-        return <div className="flex justify-center align-middle">Loading...</div>;
+        return( 
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+          <div className="spinner-border animate-spin inline-block w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full" />
+          <p className="mt-4 text-lg text-gray-700">Loading...</p>;
+      </div>
+      )
     }
 
     if (!data) {

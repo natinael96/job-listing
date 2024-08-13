@@ -14,6 +14,15 @@ const DescComponent = ({ id }: { id: string }) => {
   
   const {data, error, isLoading} = useGetJobQuery(id);
 
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      <div className="spinner-border animate-spin inline-block w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full" />
+      <p className="mt-4 text-lg text-gray-700">Loading...</p>
+    </div>
+    );
+  }
+
   if (!data) {
     return <div>No job postings available</div>;
   }
@@ -22,13 +31,7 @@ const DescComponent = ({ id }: { id: string }) => {
     return <div>Something went wrong</div>;
   }
 
-  if (isLoading) {
-    return (
-      <div className=''>
-        <div className="spinner"></div>
-        <p>Loading...</p>
-      </div>
-    );
+  
 
 
   const fields = data?.data
@@ -43,7 +46,7 @@ const DescComponent = ({ id }: { id: string }) => {
   return (
     <div className="py-24 pl-60 pr-96">
 
-    <h1 className="text-3xl font-black text-[#25324b]">{fields?.title}</h1>
+    <h1 className="text-3xl font-black text-[#25324b] pb-3">{fields?.title}</h1>
 
     <div className="bg-[#fff] flex justify-start gap-16 flex-row">
       <div className="flex flex-col gap-6 w-4/5">
@@ -172,8 +175,8 @@ const DescComponent = ({ id }: { id: string }) => {
           <div className='flex gap-2'>
 
             {fields?.categories?.map((category , index) => (
-              index % 2 == 0 ? <p key={index} className="flex items-center justify-center bg-[#56CDAD1A] text-xs text-[#56CDAD] rounded-2xl h-[31px] min-w-20 w-auto  py-1 px-3">{category}</p> 
-              : <p key={index} className="flex items-center justify-center bg-[#EB85331A] text-xs text-[#FFB836] rounded-2xl h-[31px] min-w-20 w-auto  py-1 px-3">{category}</p>
+              index % 2 == 0 ? <p key={index} className="flex items-center justify-center bg-[#56CDAD1A] text-xs text-[#56CDAD] rounded-2xl min-w-20 w-auto  py-1 px-3">{category}</p> 
+              : <p key={index} className="flex items-center justify-center bg-[#EB85331A] text-xs text-[#FFB836] rounded-2xl  py-1 px-3">{category}</p>
             ))}
 
           

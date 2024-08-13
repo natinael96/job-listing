@@ -10,7 +10,7 @@ const CardComponent = ({id}:{id: number}) => {
     const cat_colors = ["#feb835", "#4640DE"];
 
     return (
-        <div className="w-full p-6 bg-white rounded-[26px] border border-[#d6ddeb] justify-between items-center flex hover:transition duration-200 ease-in-out transform hover:scale-105">
+        <div className="p-6 bg-white rounded-[26px] border border-[#d6ddeb] justify-between items-center flex hover:transition duration-200 ease-in-out transform hover:scale-105">
             <div className="justify-start items-start gap-6 flex">
                 <Image
                     className="w-[66px] h-[59px]"
@@ -27,10 +27,14 @@ const CardComponent = ({id}:{id: number}) => {
                         <div className="text-[#7c8493] text-base font-normal font-['Epilogue'] leading-relaxed">
                             {fields?.orgName}
                         </div>
-                        <div className="w-1 h-1 bg-[#7c8493] rounded-full" />
-                        <div className="text-[#7c8493] text-base font-normal font-['Epilogue'] leading-relaxed">
+                        <div className="text-[#7c8493] text-base font-normal font-['Epilogue'] leading-relaxed flex flex-row gap-2">
                             {fields?.location.map((location, locIndex) => 
-                                <div key={locIndex}> {location} </div>
+                            <>
+                                
+                                <div key={locIndex} className='flex flex-row items-center gap-2'> <div className="w-1 h-1 bg-[#7c8493] rounded-full" /> {location} </div>
+                                
+                            </>
+                                
                             )}
                         </div>
                     </div>
