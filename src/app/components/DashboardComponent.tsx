@@ -1,6 +1,7 @@
 import Link from "next/link";
 import CardComponent from "./CardComponent";
 import React from "react";
+import { useSession } from "next-auth/react";
 import { useGetJobsQuery } from "../service/apiSlice";
 import { opportunities } from "../../../type";
 import { Provider } from "react-redux";
@@ -9,6 +10,7 @@ import { store } from "../service/store";
 
 function DashboardComponent() {
     // const data = job_postings["job_postings"];
+    const { data: session, status } = useSession();
     const { data, error, isLoading } = useGetJobsQuery();
 
     if (isLoading) {
@@ -19,6 +21,14 @@ function DashboardComponent() {
       </div>
       )
     }
+
+    if (!session) {
+      return (
+          <div className="flex flex-col items-center justify-center bg-gray-100">
+              <p className="text-sm text-gray-700">You need to be logged in to view job postings</p>
+          </div>
+      );
+  }
 
     if (!data) {
         return <div>No job postings available</div>;
@@ -34,7 +44,7 @@ function DashboardComponent() {
             {data.data.length} job postings
           </span>
         </div>
-
+        
         <div>
           <label htmlFor="sort">Sort by:</label>
           <select
