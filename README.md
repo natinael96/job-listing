@@ -60,7 +60,8 @@ Feel free to fork the repository and submit pull requests. For any issues or fea
 ## License
 
 ---
-![alt text](ss/image.png)
-![alt text](ss/image-1.png)
-![alt text](ss/image-2.png)
-
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
+![alt text](image-4.png)
+![alt text](image-3.png)

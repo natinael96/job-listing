@@ -9,8 +9,7 @@ import { store } from "../service/store";
 
 
 function DashboardComponent() {
-    // const data = job_postings["job_postings"];
-    const { data: session, status } = useSession();
+    const session = useSession();
     const { data, error, isLoading } = useGetJobsQuery();
 
     if (isLoading) {
@@ -22,7 +21,7 @@ function DashboardComponent() {
       )
     }
 
-    if (!session) {
+    if (!session.data) {
       return (
           <div className="flex flex-col items-center justify-center bg-gray-100">
               <p className="text-sm text-gray-700">You need to be logged in to view job postings</p>
@@ -35,9 +34,28 @@ function DashboardComponent() {
     }
     console.log(data);
 
+    function signOut(p0: { callbackUrl: string; }) {
+      
+      if (session.data){
+        fetch("/api/auth/signout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ session: session.data }),
+        }).then((res) => {
+          if (res.ok) {
+            signOut({ callbackUrl: "/" });
+          }
+        });
+      }
+
+    }
+
   return (
     <div className="w-4/5 py-24 pl-60 pr-96 flex flex-col gap-5">
       <div className="flex flex-row justify-between">
+        
         <div>
           <h1 className="text-3xl font-black text-[#25324b]">Job Postings</h1>
           <span className="text-[#7C8493] text-base font-normal font-['Epilogue'] leading-relaxed">
@@ -56,7 +74,12 @@ function DashboardComponent() {
             <option value="date">Date</option>
           </select>
         </div>
+
+        {session.data && <div> {session.data?.user?.name} : <button onClick={() => signOut({ callbackUrl: '/' })} className="text-red-400 ">Sign Out</button></div> || <div>Guest</div>}
+        {/* add a session terminate button */}
+
       </div>
+
       
         {data.data.map((dat, idx) => (
           

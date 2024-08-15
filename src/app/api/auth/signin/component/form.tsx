@@ -55,6 +55,7 @@ export default function Form() {
                     <input
                         type="email"
                         id="email"
+                        placeholder="Enter your email address"
                         className="border rounded-md w-full h-12 border-[#CCCCF5] p-2"
                         {...register("email", {
                             pattern: {
@@ -72,6 +73,7 @@ export default function Form() {
                     <input
                         type="password"
                         id="password"
+                        placeholder="Enter your password"
                         className="border rounded-md w-full h-12 border-[#CCCCF5] p-2"
                         {...register("password", {
                             required: "Password is required",
