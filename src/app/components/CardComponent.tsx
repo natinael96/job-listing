@@ -1,72 +1,119 @@
-import React from 'react'
-import Image from 'next/image'
-import { opportunities } from '../../../type' // Ensure this path is correct
-import { useGetJobsQuery } from '../service/apiSlice';
+"use client";
+import React, { useEffect, useState } from "react";
+import { Job } from "../api/jobs/jobs";
+import { FaBookmark, FaRegBookmark } from "react-icons/fa6";
+import Link from "next/link";
+import Image from "next/image";
 
-
-const CardComponent = ({id}:{id: number}) => {
-    const {data, error, isLoading} = useGetJobsQuery();
-    const fields = data?.data[id]
-    const cat_colors = ["#feb835", "#4640DE"];
-
-    return (
-        <div className="p-6 bg-white rounded-[26px] border border-[#d6ddeb] justify-between items-center flex hover:transition duration-200 ease-in-out transform hover:scale-105">
-            <div className="justify-start items-start gap-6 flex">
-                <Image
-                    className="w-[66px] h-[59px]"
-                    src={fields?.logoUrl || "http://via.placeholder.com/66x59"}
-                    alt={fields?.title || "Social Media Assistant"}
-                    width={66}
-                    height={59}
-                />
-                <div className="flex-col justify-start items-start gap-2 inline-flex">
-                    <div className="text-[#25324b] text-xl font-semibold font-['Epilogue'] leading-normal">
-                        {fields?.title}
-                    </div>
-                    <div className="h-[27px] justify-center items-center gap-2 inline-flex">
-                        <div className="text-[#7c8493] text-base font-normal font-['Epilogue'] leading-relaxed">
-                            {fields?.orgName}
-                        </div>
-                        <div className="text-[#7c8493] text-base font-normal font-['Epilogue'] leading-relaxed flex flex-row gap-2">
-                            {fields?.location.map((location, locIndex) => 
-                            <>
-                                
-                                <div key={locIndex} className='flex flex-row items-center gap-2'> <div className="w-1 h-1 bg-[#7c8493] rounded-full" /> {location} </div>
-                                
-                            </>
-                                
-                            )}
-                        </div>
-                    </div>
-                    <div className="text-[#25324b] font-normal font-['Epilogue'] leading-relaxed flex-wrap">
-                        {fields?.description}
-                    </div>
-                    <div className="justify-start items-start gap-3 inline-flex">
-                        <div className="px-5 py-2 bg-[#56cdad]/10 justify-center items-center gap-2 flex rounded-[80px]">
-                            <div className="text-[#56cdad] text-xs font-semibold font-['Epilogue'] leading-tight">
-                                {fields?.opType}
-                            </div>
-                        </div>
-                        <div className="w-px self-stretch bg-[#d6ddeb]" />
-                        {fields?.categories?.map((category, catIndex) => (
-                            <div
-                                key={catIndex}
-                                className="px-5 py-2 justify-center items-center gap-2 flex border rounded-[80px]"
-                                style={{ borderColor: cat_colors[catIndex % cat_colors.length], color: cat_colors[catIndex % cat_colors.length] }}
-                            >
-                                <div
-                                    className="text-xs font-semibold font-['Epilogue'] leading-tight"
-                                    style={{ color: cat_colors[catIndex % cat_colors.length] }}
-                                >
-                                    {category}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+interface JobCardProps {
+  job: Job;
+  accessToken: string;
 }
 
-export default CardComponent;
+const JobCard: React.FC<JobCardProps> = ({ job, accessToken }) => {
+  const [bookmarked, setBookmarked] = useState(job.isBookmarked);
+
+  useEffect(() => {
+    setBookmarked(job.isBookmarked);
+  }, [job]);
+
+  const handleAddBookmark = async () => {
+    const res = await fetch(
+      `https://akil-backend.onrender.com/bookmarks/${job.id}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    if (res.ok) {
+      setBookmarked(true);
+    }
+  };
+
+  const handleDeleteBookmark = async () => {
+    const res = await fetch(
+      `https://akil-backend.onrender.com/bookmarks/${job.id}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    if (res.ok) {
+      setBookmarked(false);
+    }
+  };
+
+  return (
+    <div className="relative bg-white rounded-lg shadow-lg overflow-hidden transition-transform transform hover:scale-105">
+      <Link
+        href={`/jobs/${job.id}`}
+        className="flex p-6"
+        data-testid="job-link"
+      >
+        <div className="flex-shrink-0">
+          <Image 
+            src={job.logoUrl || "https://via.placeholder.com/80"}
+            alt="Company Logo"
+            width={80}
+            height={80}
+            className="rounded-full border-2 border-gray-300"
+          />
+        </div>
+
+        <div className="flex flex-col ml-4 w-full">
+          <h2 className="text-xl font-semibold mb-2" data-testid="job-title">
+            {job.title}
+          </h2>
+          <div className="flex items-center gap-3 text-sm font-light mb-2">
+            <p className="text-gray-600" data-testid="job-org">
+              {job.orgName}
+            </p>
+            <p className="text-gray-600" data-testid="job-location">
+              {job.location[0]}
+            </p>
+          </div>
+          <p className="text-gray-700 mb-4" data-testid="job-description">
+            {job.description}
+          </p>
+          <div className="flex items-center gap-3 flex-wrap">
+            <button className="bg-[#56cdad] text-white px-4 py-1 rounded-full text-sm">
+              {job.opType}
+            </button>
+            <span className="text-gray-400">|</span>
+            {job.categories.map((data, index) => (
+              <button
+                key={index}
+                className="bg-orange-100 border border-orange-300 py-1 px-2 rounded-full text-orange-600 text-sm"
+              >
+                {data}
+              </button>
+            ))}
+          </div>
+        </div>
+      </Link>
+      {accessToken && (
+        <div className="absolute top-4 right-4">
+          {!bookmarked ? (
+            <FaRegBookmark
+              className="text-2xl cursor-pointer transition-colors hover:text-yellow-400"
+              onClick={handleAddBookmark}
+              data-testid="bookmark-icon"
+            />
+          ) : (
+            <FaBookmark
+              className="text-2xl text-yellow-400 cursor-pointer transition-colors hover:text-yellow-500"
+              onClick={handleDeleteBookmark}
+              data-testid="bookmarked-icon"
+            />
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default JobCard;

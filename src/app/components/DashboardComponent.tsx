@@ -1,97 +1,50 @@
-import Link from "next/link";
-import CardComponent from "./CardComponent";
-import React from "react";
+"use client";
+import { useEffect, useState } from "react";
+import { Job } from "../api/jobs/jobs";
+import JobCard from "./CardComponent";
 import { useSession } from "next-auth/react";
-import { useGetJobsQuery } from "../service/apiSlice";
-import { opportunities } from "../../../type";
-import { Provider } from "react-redux";
-import { store } from "../service/store";
 
-
-function DashboardComponent() {
-    const session = useSession();
-    const { data, error, isLoading } = useGetJobsQuery();
-
-    if (isLoading) {
-        return( 
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-          <div className="spinner-border animate-spin inline-block w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full" />
-          <p className="mt-4 text-lg text-gray-700">Loading...</p>;
-      </div>
-      )
-    }
-
-    if (!session.data) {
-      return (
-          <div className="flex flex-col items-center justify-center bg-gray-100">
-              <p className="text-sm text-gray-700">You need to be logged in to view job postings</p>
-          </div>
-      );
-  }
-
-    if (!data) {
-        return <div>No job postings available</div>;
-    }
-    console.log(data);
-
-    function signOut(p0: { callbackUrl: string; }) {
-      
-      if (session.data){
-        fetch("/api/auth/signout", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ session: session.data }),
-        }).then((res) => {
-          if (res.ok) {
-            signOut({ callbackUrl: "/" });
-          }
-        });
-      }
-
-    }
-
-  return (
-    <div className="w-4/5 py-24 pl-60 pr-96 flex flex-col gap-5">
-      <div className="flex flex-row justify-between">
-        
-        <div>
-          <h1 className="text-3xl font-black text-[#25324b]">Job Postings</h1>
-          <span className="text-[#7C8493] text-base font-normal font-['Epilogue'] leading-relaxed">
-            {data.data.length} job postings
-          </span>
-        </div>
-        
-        <div>
-          <label htmlFor="sort">Sort by:</label>
-          <select
-            id="sort"
-            className="px-2 py-1"
-          >
-            <option value="most-relevant">Most Relevant</option>
-            <option value="most-recent">Most Recent</option>
-            <option value="date">Date</option>
-          </select>
-        </div>
-
-        {session.data && <div> {session.data?.user?.name} : <button onClick={() => signOut({ callbackUrl: '/' })} className="text-red-400 ">Sign Out</button></div> || <div>Guest</div>}
-        {/* add a session terminate button */}
-
-      </div>
-
-      
-        {data.data.map((dat, idx) => (
-          
-            <Link href={`/Description/${dat.id}`} key={dat.id}>
-              <CardComponent id={idx}/>
-            </Link>
-            
-          ))}
-        
-    </div>
-  );
-
+interface JobListProps {
+  setCount: (count: number) => void;
 }
 
-export default DashboardComponent
+const JobList: React.FC<JobListProps> = ({ setCount }) => {
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const { data: session } = useSession();
+  const access = session?.user?.accessToken;
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        let res;
+        if (true) {
+          res = await fetch(
+            "https://akil-backend.onrender.com/opportunities/search",
+            {
+              headers: {
+                Authorization: `Bearer ${access}`,
+              },
+            }
+          );
+        }
+
+        const jobData = await res.json();
+        setJobs(jobData.data);
+        setCount(jobData.data.length);
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+      }
+    };
+
+    fetchJobs();
+  }, [access, setCount]);
+  return (
+    <div className="w-4/6 flex flex-col gap-6 justify-center">
+      {jobs.map((job) => (
+        <JobCard key={job.id} job={job} accessToken={access} />
+      ))}
+    </div>
+  );
+};
+
+export default JobList;
