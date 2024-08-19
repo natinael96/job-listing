@@ -50,7 +50,7 @@ const JobCard: React.FC<JobCardProps> = ({ job, accessToken }) => {
   return (
     <div className="relative bg-white rounded-lg shadow-lg overflow-hidden transition-transform transform hover:scale-105">
       <Link
-        href={`/jobs/${job.id}`}
+        href={`/Description/${job.id}`}
         className="flex p-6"
         data-testid="job-link"
       >

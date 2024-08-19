@@ -56,7 +56,7 @@ const VerifyEmail: React.FC<FormInput> = ({ email, name, password, confirmPasswo
         }).then(res => res.json());
 
         console.log(res);
-        router.push("auth/signin");
+        router.push("/signin");
     };
 
     const handleResend = async () => {
